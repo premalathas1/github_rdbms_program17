@@ -1,9 +1,9 @@
 CREATE OR REPLACE PROCEDURE insert_student(
-    StudentID      IN NUMBER,
-    StudentName    IN VARCHAR2,
-    DOB            IN DATE,
-    Gender         IN VARCHAR2,
-    DepartmentID   IN NUMBER
+    p_student_id IN NUMBER,
+    p_student_name IN VARCHAR2,
+    p_dob IN DATE,
+    p_gender IN VARCHAR2,
+    p_department_id IN NUMBER
 )
 IS
 BEGIN
@@ -17,11 +17,11 @@ BEGIN
     )
     VALUES
     (
-        StudentID,
-        StudentName,
-        DOB,
-        Gender,
-        DepartmentID
+        p_student_id,
+        p_student_name,
+        p_dob,
+        p_gender,
+        p_department_id
     );
 
     COMMIT;
@@ -29,8 +29,6 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Student record inserted successfully.');
 END;
 /
-
--- Execute the procedure
 
 BEGIN
     insert_student(
@@ -42,8 +40,3 @@ BEGIN
     );
 END;
 /
-
--- Display the inserted record
-
-SELECT * FROM Student;
-```
