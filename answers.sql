@@ -1,13 +1,9 @@
-```sql
--- 17. Write a PL/SQL procedure to insert a student record
--- into the Student table.
-
 CREATE OR REPLACE PROCEDURE insert_student(
-    p_student_id     IN NUMBER,
-    p_student_name   IN VARCHAR2,
-    p_dob            IN DATE,
-    p_gender         IN VARCHAR2,
-    p_department_id  IN NUMBER
+    StudentID      IN NUMBER,
+    StudentName    IN VARCHAR2,
+    DOB            IN DATE,
+    Gender         IN VARCHAR2,
+    DepartmentID   IN NUMBER
 )
 IS
 BEGIN
@@ -21,11 +17,11 @@ BEGIN
     )
     VALUES
     (
-        p_student_id,
-        p_student_name,
-        p_dob,
-        p_gender,
-        p_department_id
+        StudentID,
+        StudentName,
+        DOB,
+        Gender,
+        DepartmentID
     );
 
     COMMIT;
@@ -35,6 +31,7 @@ END;
 /
 
 -- Execute the procedure
+
 BEGIN
     insert_student(
         1001,
@@ -47,5 +44,6 @@ END;
 /
 
 -- Display the inserted record
+
 SELECT * FROM Student;
 ```
