@@ -1,103 +1,108 @@
+```bash
 #!/bin/bash
 
 echo "=========================================="
 echo " PL/SQL PROCEDURE AUTOGRADING"
 echo "=========================================="
 
-FILE="answers.sql"
+SCORE=0
+TOTAL=10
 
-if [ ! -f "$FILE" ]; then
+# 1. Check answers.sql
+if [ -f "answers.sql" ]; then
+    echo "PASS: answers.sql found."
+    SCORE=$((SCORE+1))
+else
     echo "FAIL: answers.sql not found."
-    exit 1
 fi
 
-echo "PASS: answers.sql found."
+# Read answers.sql
+SQL=$(cat answers.sql)
 
-CONTENT=$(cat "$FILE" | tr '[:upper:]' '[:lower:]')
+# Convert to lowercase for case-insensitive checking
+LOWER=$(echo "$SQL" | tr '[:upper:]' '[:lower:]')
 
-# Test 1: CREATE PROCEDURE
-if echo "$CONTENT" | grep -q "create or replace procedure"; then
+# 2. Check CREATE OR REPLACE PROCEDURE
+if echo "$LOWER" | grep -q "create[[:space:]]*or[[:space:]]*replace[[:space:]]*procedure"; then
     echo "PASS: CREATE OR REPLACE PROCEDURE found."
+    SCORE=$((SCORE+1))
 else
     echo "FAIL: CREATE OR REPLACE PROCEDURE not found."
-    exit 1
 fi
 
-# Test 2: Procedure name
-if echo "$CONTENT" | grep -q "procedure insert_student"; then
+# 3. Check procedure name
+if echo "$LOWER" | grep -q "procedure[[:space:]]*insert_student"; then
     echo "PASS: INSERT_STUDENT procedure found."
+    SCORE=$((SCORE+1))
 else
     echo "FAIL: INSERT_STUDENT procedure not found."
-    exit 1
 fi
 
-# Test 3: StudentID parameter
-if echo "$CONTENT" | grep -q "p_studentid"; then
+# 4. Check StudentID parameter
+if echo "$LOWER" | grep -Eq "student[_]*id[[:space:]]+in[[:space:]]+number|p_student_id[[:space:]]+in[[:space:]]+number"; then
     echo "PASS: StudentID parameter found."
+    SCORE=$((SCORE+1))
 else
     echo "FAIL: StudentID parameter not found."
-    exit 1
 fi
 
-# Test 4: StudentName parameter
-if echo "$CONTENT" | grep -q "p_studentname"; then
+# 5. Check StudentName parameter
+if echo "$LOWER" | grep -Eq "student[_]*name[[:space:]]+in[[:space:]]+varchar|p_student_name[[:space:]]+in[[:space:]]+varchar"; then
     echo "PASS: StudentName parameter found."
+    SCORE=$((SCORE+1))
 else
     echo "FAIL: StudentName parameter not found."
-    exit 1
 fi
 
-# Test 5: DOB parameter
-if echo "$CONTENT" | grep -q "p_dob"; then
-    echo "PASS: DOB parameter found."
-else
-    echo "FAIL: DOB parameter not found."
-    exit 1
-fi
-
-# Test 6: Gender parameter
-if echo "$CONTENT" | grep -q "p_gender"; then
-    echo "PASS: Gender parameter found."
-else
-    echo "FAIL: Gender parameter not found."
-    exit 1
-fi
-
-# Test 7: DepartmentID parameter
-if echo "$CONTENT" | grep -q "p_departmentid"; then
-    echo "PASS: DepartmentID parameter found."
-else
-    echo "FAIL: DepartmentID parameter not found."
-    exit 1
-fi
-
-# Test 8: INSERT INTO Student
-if echo "$CONTENT" | grep -q "insert into student"; then
+# 6. Check INSERT INTO Student
+if echo "$LOWER" | grep -Eq "insert[[:space:]]+into[[:space:]]+student"; then
     echo "PASS: INSERT INTO Student found."
+    SCORE=$((SCORE+1))
 else
     echo "FAIL: INSERT INTO Student not found."
-    exit 1
 fi
 
-# Test 9: VALUES
-if echo "$CONTENT" | grep -q "values"; then
-    echo "PASS: VALUES clause found."
+# 7. Check StudentID in INSERT
+if echo "$LOWER" | grep -q "studentid"; then
+    echo "PASS: StudentID field found."
+    SCORE=$((SCORE+1))
 else
-    echo "FAIL: VALUES clause not found."
-    exit 1
+    echo "FAIL: StudentID field not found."
 fi
 
-# Test 10: END
-if echo "$CONTENT" | grep -q "end;"; then
-    echo "PASS: END statement found."
+# 8. Check procedure execution
+if echo "$LOWER" | grep -q "insert_student("; then
+    echo "PASS: Procedure execution found."
+    SCORE=$((SCORE+1))
 else
-    echo "FAIL: END statement not found."
-    exit 1
+    echo "FAIL: Procedure execution not found."
 fi
 
-echo ""
+# 9. Check COMMIT
+if echo "$LOWER" | grep -q "commit"; then
+    echo "PASS: COMMIT found."
+    SCORE=$((SCORE+1))
+else
+    echo "FAIL: COMMIT not found."
+fi
+
+# 10. Check DBMS_OUTPUT
+if echo "$LOWER" | grep -q "dbms_output.put_line"; then
+    echo "PASS: DBMS_OUTPUT found."
+    SCORE=$((SCORE+1))
+else
+    echo "FAIL: DBMS_OUTPUT not found."
+fi
+
 echo "=========================================="
-echo " ALL TESTS PASSED"
+echo " SCORE: $SCORE / $TOTAL"
 echo "=========================================="
 
-exit 0
+if [ "$SCORE" -eq "$TOTAL" ]; then
+    echo "PASS: PL/SQL procedure assignment completed."
+    exit 0
+else
+    echo "Assignment needs correction."
+    exit 1
+fi
+```
