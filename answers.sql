@@ -1,3 +1,4 @@
+```sql
 CREATE OR REPLACE PROCEDURE insert_student(
     p_student_id IN NUMBER,
     p_student_name IN VARCHAR2,
@@ -40,3 +41,4 @@ BEGIN
     );
 END;
 /
+```
