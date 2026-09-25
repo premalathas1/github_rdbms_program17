@@ -1,48 +1,88 @@
-```yaml
-name: PL/SQL Procedure Autograding
+#!/bin/bash
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+echo "PL/SQL PROCEDURE AUTOGRADING"
 
-jobs:
-  autograding:
-    runs-on: ubuntu-latest
+SCORE=0
 
-    steps:
+if [ -f "answers.sql" ]; then
+    echo "PASS: answers.sql found"
+    SCORE=$((SCORE + 1))
+else
+    echo "FAIL: answers.sql not found"
+    exit 1
+fi
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
+SQL=$(cat "answers.sql")
 
-      - name: Display repository files
-        run: |
-          echo "Repository Files"
-          find . -maxdepth 3 -type f | sort
+if echo "$SQL" | grep -Eiq "create[[:space:]]+or[[:space:]]+replace[[:space:]]+procedure"; then
+    echo "PASS: CREATE OR REPLACE PROCEDURE found"
+    SCORE=$((SCORE + 1))
+else
+    echo "FAIL: CREATE OR REPLACE PROCEDURE not found"
+fi
 
-      - name: Check test.sh
-        run: |
-          if [ ! -f "./test.sh" ]; then
-            echo "ERROR: test.sh not found in repository root."
-            exit 1
-          fi
-          echo "SUCCESS: test.sh found."
+if echo "$SQL" | grep -Eiq "procedure[[:space:]]+insert_student"; then
+    echo "PASS: INSERT_STUDENT procedure found"
+    SCORE=$((SCORE + 1))
+else
+    echo "FAIL: INSERT_STUDENT procedure not found"
+fi
 
-      - name: Display test.sh
-        run: |
-          echo "----- START test.sh -----"
-          nl -ba ./test.sh
-          echo "----- END test.sh -----"
+if echo "$SQL" | grep -Eiq "p_student_id|studentid"; then
+    echo "PASS: StudentID parameter found"
+    SCORE=$((SCORE + 1))
+else
+    echo "FAIL: StudentID parameter not found"
+fi
 
-      - name: Check test.sh syntax
-        run: |
-          bash -n ./test.sh
-          echo "SUCCESS: test.sh syntax is valid."
+if echo "$SQL" | grep -Eiq "p_student_name|studentname"; then
+    echo "PASS: StudentName parameter found"
+    SCORE=$((SCORE + 1))
+else
+    echo "FAIL: StudentName parameter not found"
+fi
 
-      - name: Make test executable
-        run: chmod +x ./test.sh
+if echo "$SQL" | grep -Eiq "insert[[:space:]]+into[[:space:]]+student"; then
+    echo "PASS: INSERT INTO Student found"
+    SCORE=$((SCORE + 1))
+else
+    echo "FAIL: INSERT INTO Student not found"
+fi
 
-      - name: Run Autograding
-        run: ./test.sh
-```
+if echo "$SQL" | grep -Eiq "studentid"; then
+    echo "PASS: StudentID field found"
+    SCORE=$((SCORE + 1))
+else
+    echo "FAIL: StudentID field not found"
+fi
+
+if echo "$SQL" | grep -Eiq "begin"; then
+    echo "PASS: BEGIN block found"
+    SCORE=$((SCORE + 1))
+else
+    echo "FAIL: BEGIN block not found"
+fi
+
+if echo "$SQL" | grep -Eiq "commit"; then
+    echo "PASS: COMMIT found"
+    SCORE=$((SCORE + 1))
+else
+    echo "FAIL: COMMIT not found"
+fi
+
+if echo "$SQL" | grep -Eiq "dbms_output"; then
+    echo "PASS: DBMS_OUTPUT found"
+    SCORE=$((SCORE + 1))
+else
+    echo "FAIL: DBMS_OUTPUT not found"
+fi
+
+echo "SCORE: $SCORE / 10"
+
+if [ "$SCORE" -eq 10 ]; then
+    echo "PASS: Assignment completed successfully"
+    exit 0
+else
+    echo "FAIL: Assignment needs correction"
+    exit 1
+fi
